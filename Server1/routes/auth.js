@@ -2,9 +2,12 @@ const experss=require('express')
 const route=experss.Router()
 const mongoose=require('mongoose')
 const bycrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
+const {JWT_SEC_KEY} = require('../key')
 const User=mongoose.model("User")
-route.get('/',(req,res)=>{
-    res.send("Router Get")
+const requireLogin = require('../middleware/requireLogin')
+route.get('/protected',requireLogin,(req,res)=>{
+    res.send("Hello World")
 })
 route.post('/signup',(req,res)=>{
 
@@ -66,8 +69,9 @@ route.post('/signin',(req,res)=>{
             .then(doMatch=>{
                 if(doMatch)
                 {
+                    const token=jwt.sign({_id:savedUser._id},JWT_SEC_KEY)
                     res.json({
-                        message:"User LoggedIn"
+                        token
                     })
                 }
                 else{
