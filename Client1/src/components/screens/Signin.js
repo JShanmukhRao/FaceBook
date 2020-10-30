@@ -1,29 +1,75 @@
-import React from "react"
-import { Link } from "react-router-dom"
+import React, { useState, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import M from "materialize-css";
+import { UserContext } from "../../App";
+const Signin = () => {
+  const { state, dispatch } = useContext(UserContext);
 
-const Signin = ()=>{
-    return(
-      <div className="mycard">
-           <div className="card auth-card input-field ">
-               <h2>MyFacebook</h2>
-               <input   
-                 type="email"
-                 placeholder="Email"
+  const history = useHistory();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const postData = () => {
+    fetch("/signin", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        password,
 
-               /> 
-                <input   
-                 type="password"
-                 placeholder="Password"
+        email,
+      }),
+    })
+      .then((res) => res.json())
 
-               /> 
+      .then((data) => {
+        if (data.err) {
+          M.toast({ html: data.err, classes: "#c62828 red darken-3" });
+          return;
+        } else {
+          console.log(data.user)
+          localStorage.setItem("jwt", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          
+          dispatch({ type: "USER", payload: data.user });
+          M.toast({
+            html: "signedin success",
+            classes: "#43a047 green darken-1",
+          });
 
-                 <button className="btn waves-effect waves-light blue lighten-2" type="submit"  >Login
-                 </button>
-                 <br/>
-                 <Link to="/signup">Dont't have a account</Link>
-            </div>
+          history.push("/");
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+  return (
+    <div className="mycard">
+      <div className="card auth-card input-field ">
+        <h2>MyFacebook</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          className="btn waves-effect waves-light blue darken-1"
+          type="submit"
+          onClick={postData}
+        >
+          Login
+        </button>
+        <br />
+        <Link to="/signup">Dont't have a account</Link>
       </div>
-         
- )
-}
+    </div>
+  );
+};
 export default Signin;

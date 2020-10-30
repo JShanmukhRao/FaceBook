@@ -1,63 +1,87 @@
-import React, { Component } from "react"
+import React, { Component, useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { UserContext } from "../../App";
 
-class Profile extends Component{
-   
-    render(){
-        return(
-            <div style={{maxWidth:"550px",margin:"0px auto"}}>
-                 <div
-                    style={{
-                        display:"flex",
-                        justifyContent:"space-around",
-                        margin:"18px auto",
-                        borderBottom:"1px solid"
-                    }}
-                 >
-                     <div>
-                         <img style={{width:"160px" ,height:"160px",borderRadius:"80px"}}
-                          src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                     </div>
-                     <div>
-                         <h5>Shubham Rao</h5>
-                         <div 
-                           style={
-                               {
-                                   display:"flex",
-                                   justifyContent:"space-between",
-                                   width:"108%"
-                               }
-                           }
-                         >
-                             <h6>40 post</h6>
-                             <h6>40 following</h6>
-                             <h6>40 following</h6>
-                         </div>
-                     </div>
-                    
-                 </div>
-                    
-                    <div className="gallery">
-                    <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         <img className="item"
-                         src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" />
-                         
-                    </div>
+const Profile = () => {
+  const [mypic, setPic] = useState([]);
+  const { state, dispatch } = useContext(UserContext);
 
+  useEffect(() => {
+    fetch("/mypost", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((result) => { return setPic(result.posts), console.log(result)});
+  }, []);
+  {state && console.log(state.pic);}
+  
+  return (
+    <>
+      {state ? (
+        <div style={{ maxWidth: "550px", margin: "0px auto" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              margin: "18px auto",
+              borderBottom: "1px solid",
+            }}
+          >
+            <div>
+              <img
+                style={{
+                  width: "160px",
+                  height: "160px",
+                  borderRadius: "80px",
+                }}
+                alt="Post"
+                src={state.pic}
+              />
+              <Link to="/changeprofile">
+                <i class="material-icons" >
+                  camera_alt
+                </i>
+              </Link>
+            </div>
+            <div>
+              <h5>{state ? state.name : "loading"}</h5>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "108%",
+                }}
+              >
+                {console.log(mypic[0])}
+                <h6>{mypic.length > 0 ? mypic.length : 0} post</h6>
+                <h6>{state.followers.length + "  "} followers</h6>
+                <h6>{state.following.length + "  "}following</h6>
+              </div>
+            </div>
+          </div>
 
+          <div className="gallery">
+            {mypic.length > 0
+              ? mypic.map((item) => {
+                  return (
+                    <img
+                      key={item._id}
+                      className="item"
+                      alt={item.title}
+                      src={item.photo}
+                    />
+                  );
+                })
+              : ""}
+          </div>
+        </div>
+      ) : (
+        "loading"
+      )}
+    </>
+  );
+};
 
-                    </div>
-      
-          )
-    }
-    
-}
 export default Profile;

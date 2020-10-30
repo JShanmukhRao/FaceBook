@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../../App";
 const Home = () => {
   const [data, setData] = useState([]);
-    const [text, setText] = useState("");
+  const [text, setText] = useState("");
 
   const { state, dispatch } = useContext(UserContext);
   useEffect(() => {
-    fetch("/post", {
+    fetch("/followingpost", {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("jwt"),
       },
@@ -112,9 +112,10 @@ const Home = () => {
           return item._id !== result._id;
         });
         setData(newdata);
-      }).catch(err=>{
-         console.log(err)
       })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div className="home">
@@ -122,7 +123,7 @@ const Home = () => {
         data.map((item) => {
           return (
             <div key={item._id} className="card home-card">
-              <h5 style={{ padding: "6px" }}>
+              <h5 style={{padding:"6px"}}>
                 <Link
                   to={
                     state._id !== item.postedBy._id
