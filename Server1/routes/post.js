@@ -9,6 +9,7 @@ router.get("/post", requireLogin, (req, res) => {
     .populate("comments.postedBy", "_id name")
 
     .populate("postedBy", "_id name pic")
+    .sort('-createdAt')
     .then((post) => {
       res.json({
         posts: post,
@@ -45,8 +46,12 @@ router.post("/createpost", requireLogin, (req, res) => {
 });
 
 router.get("/followingpost", requireLogin, (req, res) => {
-  Post.find({ postedBy: { $in:  req.user.following  } })
+  Post.find({ postedBy: { $in: req.user.followers } })
+    .populate("comments.postedBy", "_id name")
+
     .populate("postedBy", "_id name pic followers following")
+    .sort("-createdAt")
+
     .then((post) => {
       res.json({
         posts: post,
@@ -75,14 +80,14 @@ router.put("/like", requireLogin, (req, res) => {
   Post.findByIdAndUpdate(
     req.body.postId,
     {
-      $$addToSet: { likes: req.user.id },
+      $addToSet: { likes: req.user.id },
     },
     {
       new: true,
     }
   )
     .populate("comments.postedBy", "_id name")
-    .populate("postedBy", "_id name pic")
+    .populate("postedBy", "_id name ")
     .exec((err, result) => {
       if (err) {
         return res.status(422).json({ err });
