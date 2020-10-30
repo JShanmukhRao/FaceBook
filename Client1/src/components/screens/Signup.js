@@ -8,8 +8,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+const [loading,setLoading]=useState(false)
   useEffect(()=>{
      if(url)
      {
@@ -23,6 +22,7 @@ const Signup = () => {
       )
     ) {
       M.toast({ html: "Invalid Email", classes: "#c62828 red darken-3" });
+      setLoading(false);
       return;
     } else {
       fetch("/signup", {
@@ -33,7 +33,7 @@ const Signup = () => {
         body: JSON.stringify({
           name,
           password,
-pic:url,
+          pic: url,
           email,
         }),
       })
@@ -42,16 +42,20 @@ pic:url,
         .then((data) => {
           if (data.err) {
             M.toast({ html: data.err, classes: "#c62828 red darken-3" });
+            setLoading(false);
             return;
           } else {
             M.toast({
               html: data.message,
               classes: "#43a047 green darken-1",
             });
+            setLoading(false);
             history.push("/signin");
           }
         })
-        .catch((err) => console.log(err));
+        .catch(
+          (err) => M.toast({ html: err, classes: "#c62828 red darken-3" }),
+        );
     }
   };
   const uploadPic = () => {
@@ -64,15 +68,19 @@ pic:url,
       body: data,
     })
       .then((res) => res.json())
-      .then((data) => setUrl(data.url), console.log("knl" + data.url))
+      .then((data) => setUrl(data.url))
       .catch((err) => console.log(err));
 
-    console.log(title, body, url);
+  
   };
   const postData = () => {
+    setLoading(true)
+    
     if (image) {
       uploadPic();
+      
     } else {
+     
       userFields();
     }
   };
@@ -111,8 +119,9 @@ pic:url,
           className="btn waves-effect waves-light blue darken-1"
           type="submit"
           onClick={postData}
+          disabled={loading}
         >
-          Signup
+        {loading?  <i className="fa fa-circle-o-notch fa-spin"></i> :""}Signup
         </button>
         <br></br>
         <Link to="/signin">Already have a account</Link>

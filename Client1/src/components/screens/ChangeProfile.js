@@ -1,16 +1,17 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, {  useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../../App";
 const CreatePost = () => {
   const history = useHistory();
   const { state, dispatch } = useContext(UserContext);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+ 
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
 
   useEffect(() => {
     if (url) {
+                const user=JSON.parse(localStorage.getItem("user"))
+let data=""
       fetch("/changeprofile", {
         method: "post",
         headers: {
@@ -23,16 +24,21 @@ const CreatePost = () => {
         }),
       })
         .then((res) => res.json())
-        .then((data) => {
-          return (
-          dispatch({
-            type: "PROFILEUPDATE",
-            payload: data.pic,
-          }),localStorage.getItem("user").pic=data.pic,
-          history.push('/profile')
-       
-          );
-        });
+        .then((result) => {
+
+        return(
+            data=result.pic,
+                        dispatch({
+              type: "PROFILEUPDATE",
+              payload: data,
+            }),
+            user.pic=data,
+             localStorage.setItem("user", JSON.stringify(user))
+            ,
+            history.push("/profile")
+        )
+          }
+        )
     }
   }, [url]);
 
@@ -46,10 +52,10 @@ const CreatePost = () => {
       body: data,
     })
       .then((res) => res.json())
-      .then((data) => setUrl(data.url), console.log("knl" + data.url))
+      .then((data) => setUrl(data.url))
       .catch((err) => console.log(err));
 
-    console.log(title, body, url);
+  
   };
   return (
     <div>

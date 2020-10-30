@@ -23,16 +23,18 @@ const Routing = () => {
   const history = useHistory();
   const { state, dispatch } = useContext(UserContext);
   useEffect(() => {
-
+let mounted=true;
     const user = JSON.parse(localStorage.getItem("user"));
  
 
    
-    if (user) {
+    if (user && mounted ) {
       dispatch({ type: "USER", payload: user });
-    } else {
+    } 
+  else {
       history.push("/signin");
     }
+    return ()=>mounted=false
   }, []);
   return (
     <Switch>

@@ -8,7 +8,11 @@ const Signin = () => {
   const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const postData = () => {
+        setLoading(true);
+
     fetch("/signin", {
       method: "post",
       headers: {
@@ -25,9 +29,11 @@ const Signin = () => {
       .then((data) => {
         if (data.err) {
           M.toast({ html: data.err, classes: "#c62828 red darken-3" });
+                      setLoading(false);
+
           return;
         } else {
-          console.log(data.user)
+          
           localStorage.setItem("jwt", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
           
@@ -36,6 +42,7 @@ const Signin = () => {
             html: "signedin success",
             classes: "#43a047 green darken-1",
           });
+                      setLoading(false);
 
           history.push("/");
         }
@@ -63,7 +70,9 @@ const Signin = () => {
           className="btn waves-effect waves-light blue darken-1"
           type="submit"
           onClick={postData}
+          disabled={loading}
         >
+          {loading ? <i className="fa fa-circle-o-notch fa-spin"></i> : ""}{" "}
           Login
         </button>
         <br />

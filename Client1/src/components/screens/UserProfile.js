@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import {useParams} from 'react-router-dom'
 
@@ -10,7 +10,6 @@ const Profile = () => {
   const { userid } = useParams();
   
   useEffect(() => {
-    console.log(1);
     fetch(`/user/${userid}`, {
       headers: {
         
@@ -26,6 +25,7 @@ const Profile = () => {
   }, []);
 
 const follow=(userId)=>{
+   const user = JSON.parse(localStorage.getItem("user"));
   fetch("/follow", {
     method: "put",
     headers: {
@@ -39,15 +39,18 @@ const follow=(userId)=>{
     .then((res) => res.json())
     .then((result) => {
      return (
+       console.log(result.currentUser),
        setUser(result.otherUser),
        dispatch({
          type: "UPDATE",
          payload: {
            following: result.currentUser.following,
            followers: result.currentUser.followers,
-         },
-       }),
-       console.log(result)
+         }
+         
+       }), user.followers=result.currentUser.followers,
+             localStorage.setItem("user", JSON.stringify(user))
+            
      );
     })
     .catch((err) => {
@@ -57,6 +60,8 @@ const follow=(userId)=>{
 
 
 const unfollow = (userId) => {
+     const user = JSON.parse(localStorage.getItem("user"));
+
   fetch("/unfollow", {
     method: "put",
     headers: {
@@ -78,14 +83,14 @@ const unfollow = (userId) => {
             followers: result.currentUser.followers,
           },
         }),
-        console.log(result)
+        (user.followers = result.currentUser.followers),
+        localStorage.setItem("user", JSON.stringify(user))
       );
     })
     .catch((err) => {
       console.log(err);
     });
 };
-console.log(user);
   return (
     <>
       {userProfile ? (
@@ -119,8 +124,8 @@ console.log(user);
                 }}
               >
                 <h6>{userProfile.posts.length} post</h6>
-                <h6>{user.followers.length} followers</h6>
-                <h6>{user.following.length} following</h6>
+                <h6>{user.followers.length} friends</h6>
+               
               </div>
               {!user.followers.includes(state._id) ? (
                 <button
@@ -130,7 +135,7 @@ console.log(user);
                   className="btn waves-effect waves-light blue darken-1"
                   onClick={() => follow(userid)}
                 >
-                  Follow
+                  Friend
                 </button>
               ) : (
                 <button
@@ -140,7 +145,7 @@ console.log(user);
                   className="btn waves-effect waves-light blue darken-1"
                   onClick={() => unfollow(userid)}
                 >
-                  Unfollow
+                  Unfriend
                 </button>
               )}
             </div>
@@ -160,7 +165,7 @@ console.log(user);
           </div>
         </div>
       ) : (
-        "loading"
+        <h2>loading...!</h2>
       )}
     </>
   );

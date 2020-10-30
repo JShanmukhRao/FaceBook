@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../App";
 
@@ -13,9 +13,9 @@ const Profile = () => {
       },
     })
       .then((res) => res.json())
-      .then((result) => { return setPic(result.posts), console.log(result)});
+      .then((result) => { return setPic(result.posts)});
   }, []);
-  {state && console.log(state.pic);}
+  
   
   return (
     <>
@@ -40,13 +40,12 @@ const Profile = () => {
                 src={state.pic}
               />
               <Link to="/changeprofile">
-                <i class="material-icons" >
-                  camera_alt
-                </i>
+                <i className="material-icons">camera_alt</i>
               </Link>
             </div>
             <div>
               <h5>{state ? state.name : "loading"}</h5>
+              <h6>{state ? state.email : "loading"}</h6>
               <div
                 style={{
                   display: "flex",
@@ -54,10 +53,8 @@ const Profile = () => {
                   width: "108%",
                 }}
               >
-                {console.log(mypic[0])}
                 <h6>{mypic.length > 0 ? mypic.length : 0} post</h6>
-                <h6>{state.followers.length + "  "} followers</h6>
-                <h6>{state.following.length + "  "}following</h6>
+                <h6>{state.followers.length + "  "} friends</h6>
               </div>
             </div>
           </div>

@@ -2,8 +2,13 @@
 a{
     color:black !important
 }
-.brand-logo,h2,li{
+.h2{
     font-family: 'Grand Hotel', cursive;
+
+}
+.brand-logo{
+    font-family: 'Grand Hotel', cursive;
+    color: white !important;
 }
 .auth-card{
    max-width: 500px;
@@ -63,4 +68,20 @@ margin: 26px auto;
   }
   .material-icons:hover{
     cursor: pointer;
+  }
+  .mini-profile
+  {
+    height: 25px;
+    width: 25px;
+    margin-bottom: -5px;
+    border-radius: 60%;
+  }
+  .nav-color
+  {
+    color: white !important;
+  }
+  .collection-item{
+    color: black !important;
+    width:100%,
+    
   }

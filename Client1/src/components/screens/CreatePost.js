@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import M from "materialize-css";
 
 const CreatePost = () => {
   const history = useHistory();
@@ -8,6 +9,7 @@ const CreatePost = () => {
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (url) {
@@ -26,10 +28,13 @@ const CreatePost = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.err) {
-            alert(data.err);
+            M.toast({ html: data.err, classes: "#c62828 red darken-3" });
+            setLoading(false);
+
             return;
           } else {
-            console.log(data);
+            setLoading(false);
+
             history.push("/");
           }
         })
@@ -38,6 +43,14 @@ const CreatePost = () => {
   }, [url]);
 
   const postDetails = () => {
+    setLoading(true);
+
+    if(!image)
+    {
+        M.toast({ html: "Invalid Image", classes: "#c62828 red darken-3" });
+        setLoading(false);
+        return
+    }
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", "insta-clone");
@@ -47,10 +60,8 @@ const CreatePost = () => {
       body: data,
     })
       .then((res) => res.json())
-      .then((data) => setUrl(data.url), console.log("knl" + data.url))
+      .then((data) => setUrl(data.url))
       .catch((err) => console.log(err));
-
-    console.log(title, body, url);
   };
   return (
     <div>
@@ -87,7 +98,9 @@ const CreatePost = () => {
         <button
           className="btn waves-effect waves-light blue darken-1"
           onClick={postDetails}
+          disabled={loading}
         >
+          {loading ? <i className="fa fa-circle-o-notch fa-spin"></i> : ""}
           Submit Post
         </button>
       </div>
